@@ -1,0 +1,36 @@
+﻿@using FlickrTest.Models
+@model SearchModel
+@{
+    var model = Model ?? new SearchModel { Cached = false, Tags = null, Images = null };
+    ViewBag.Title = string.IsNullOrEmpty(model.Tags) ? "Search Flickr images by Tags" : string.Format(@"Flickr Images with tags ""{0}""", model.Tags);
+}
+<div class="search">
+    @using (Html.BeginForm("Index", "Home", FormMethod.Get, new { target = "_blank" })) {
+        @Html.TextBox("tags", model.Tags, new { placeholder = "Search images", @class = "search-text" })
+        <span id="cacheUsed" style="float: left; display: @(string.IsNullOrEmpty(model.Tags) ? "none" : "block")">
+            @if (null == model.Images || 0 == model.Images.Count) {
+                if (model.Cached) {
+                @:"Loaded from cache, no results";
+            } else {
+                @:"Loaded from flickr, no results";
+            }
+            } else {
+                @String.Format((model.Cached ? "Loaded from cache, {0} results" : "Loaded from flickr, {0} results"), model.Images.Count)
+            }
+        </span>
+        <input type="submit" value="Share..." class="share-button" />
+    }
+</div>
+
+<div id="container" class="pictures">
+    @if (null != model.Images) {
+        foreach (var image in model.Images) {
+        <div class="item">
+            <div class="group">
+                <img class="image" src="@image.ImageUrl" alt="@image.Title"><span class="title">@image.Title</span>
+            </div>
+        </div>
+        }
+    }
+
+</div>
